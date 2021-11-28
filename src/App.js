@@ -1,52 +1,90 @@
-import { useState } from "react";
-import { useFormik } from "formik";
+import { Formik } from "formik";
 import * as Yup from "yup";
-import {
-  Container,
-  FormControl,
-  Select,
-  InputLabel,
-  MenuItem,
-  Grid,
-  Button,
-  TextField,
-  Typography
-} from "@mui/material";
+import { Container, Grid, Button, Typography } from "@mui/material";
+import TextFields from "./component/TextField";
 
 export default function App() {
-  const [age, setAge] = useState("");
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
-
-  const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-      select: ""
-    },
-    validationSchema: Yup.object({
-      email: Yup.string()
-        // .max(5, "Muset be less than 50")
-        .email("email is invalid.")
-        .required("This is require field."),
-      select: Yup.string().required("Required.")
-    }),
-    onSubmit: (value) => {
-      console.log(value);
-    }
+  const validate = Yup.object({
+    firstName: Yup.string()
+      .required("First name is required.")
+      .max(5, "Name should be less than 5."),
+    lastName: Yup.string()
+      .required("Last name is required.")
+      .max(5, "Name should be less than 5."),
+    email: Yup.string().required("Email is required.").email("Email formated."),
+    password: Yup.string()
+      .required("Password is required.")
+      .max(5, "Name should be less than 5."),
+    confirmPassword: Yup.string()
+      .required("Confirm Password is required.")
+      .oneOf([Yup.ref("password"), null], "Password not metch.")
+      .max(5, "Name should be less than 5.")
   });
-  console.log(formik?.touched);
   return (
     <Container>
-      <Grid container component="form" onSubmit={formik.handelForm}>
+      <Grid container component="form">
         <Grid item xs={12}>
           <Typography variant="h6" component="div" align="center">
             Sign in
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Formik
+          initialValues={{
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: "",
+            confirmPassword: ""
+          }}
+          validationSchema={validate}
+        >
+          {(fomik) => {
+            return (
+              <div
+                style={{
+                  width: "100%"
+                }}
+              >
+                {console.log(fomik.values)}
+                <TextFields
+                  type="text"
+                  // value
+                  lable="First Name"
+                  name="firstName"
+                />
+                <TextFields
+                  type="text"
+                  // value
+                  lable="Last Name"
+                  name="lastName"
+                />
+                <TextFields
+                  type="text"
+                  // value
+                  lable="Email"
+                  name="email"
+                />
+                <TextFields
+                  type="password"
+                  // value
+                  lable="Password"
+                  name="password"
+                />
+                <TextFields
+                  type="password"
+                  // value
+                  lable="Confirm Password"
+                  name="confirmPassword"
+                />
+
+                <Button variant="contained" color="secondary" fullWidth>
+                  Submit
+                </Button>
+              </div>
+            );
+          }}
+        </Formik>
+        {/* <Grid item xs={12}>
           <TextField
             type="text"
             fullWidth
@@ -116,6 +154,7 @@ export default function App() {
             Submit
           </Button>
         </Grid>
+      */}
       </Grid>
     </Container>
   );
